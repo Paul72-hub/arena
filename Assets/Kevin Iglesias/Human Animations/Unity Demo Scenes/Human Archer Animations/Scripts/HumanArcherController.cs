@@ -82,11 +82,11 @@ namespace KevinIglesias
             }
         }
         
-        void Update()
+       /* void Update()
         {
             //Apply selected animation
             archerAnimator.SetTrigger(animationToPlay.ToString());
-        }
+        }*/
 
         void CreateBowstring()
         {
