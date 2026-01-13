@@ -1,35 +1,36 @@
 using UnityEngine;
+using TMPro;
 using UnityEngine.SceneManagement;
 
-public class StartMenu : MonoBehaviour
+public class MenuManager : MonoBehaviour
 {
-    public GameObject tutorielPanel;
+    [Header("Configuration des Panneaux")]
+    public GameObject menuPrincipal; // Le conteneur de tes boutons de base
+    public GameObject panelTuto;     // Le panneau noir transparent
 
-    // Lance la scène du jeu
     public void StartGame()
     {
+        // Remplace par le nom exact de ta scène de jeu
         SceneManager.LoadScene("Scene_Game");
     }
 
-    // Affiche le panneau du tutoriel
     public void OpenTutoriel()
     {
-        tutorielPanel.SetActive(true);
+        // On affiche le tuto et on peut cacher le menu principal si on veut
+        panelTuto.SetActive(true);
+        menuPrincipal.SetActive(false);
     }
 
-    // Cache le panneau du tutoriel
     public void CloseTutoriel()
     {
-        tutorielPanel.SetActive(false);
+        // On fait l'inverse
+        panelTuto.SetActive(false);
+        menuPrincipal.SetActive(true);
     }
 
-    // Quitte l'application
     public void QuitGame()
     {
-
-    Application.Quit(); // ferme le jeu quand il est construit
-    Debug.Log("Quitter le jeu"); // juste pour tester dans l'éditeur
-
+        Application.Quit();
+        Debug.Log("Le jeu a été fermé !");
     }
 }
-
