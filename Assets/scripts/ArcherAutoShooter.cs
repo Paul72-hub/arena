@@ -4,33 +4,33 @@ using System.Collections;
 public class ArcherAutoShooter : MonoBehaviour
 {
     [Header("References")]
-    public Transform anchorPoint;      // point de tir (dans la tour)
-    public Transform target;           // ta mascotte / XR Rig
-    public GameObject arrowPrefab;     // prefab qui a HumanArcherArrow
+    public Transform anchorPoint;
+    public Transform target;
+    public GameObject arrowPrefab;
 
     [Header("Fire settings")]
-    //public float fireRate = 1.0f;      // 1 = 1 flèche / seconde
     public float minInterval = 1f;
     public float maxInterval = 2.5f;
-    public Vector3 aimOffset;          // optionnel: viser un peu au-dessus (tête)
+    public Vector3 aimOffset;
 
+    [Header("Arrow orientation fix")]
+    [Tooltip("If your arrow prefab is rotated wrong, set this to (0,90,0) or (0,-90,0).")]
+    public Vector3 arrowRotationOffsetEuler = Vector3.zero;
 
-
-    //pour la deviation
     [Header("Aim deviation (spread)")]
-    [Tooltip("Max deviation angle in degrees.")]
-    public float maxDeviationDegrees = 8f;
-
-    [Tooltip("Chance (0..1) that a shot will deviate at all.")]
-    [Range(0f, 1f)] public float deviationChance = 0.6f;
-
+    public float maxDeviationDegrees = 12f;
+    [Range(0f, 1f)] public float deviationChance = 1f;
 
     private Coroutine loop;
 
-    void OnEnable()
+    void Awake()
     {
-        loop = StartCoroutine(ShootLoop());
+        // For VR: default to headset camera if not assigned
+        if (target == null && Camera.main != null)
+            target = Camera.main.transform;
     }
+
+    void OnEnable() => loop = StartCoroutine(ShootLoop());
 
     void OnDisable()
     {
@@ -42,35 +42,35 @@ public class ArcherAutoShooter : MonoBehaviour
         while (true)
         {
             Shoot();
-            float randomWaitTime = Random.Range(minInterval, maxInterval);
-            yield return new WaitForSeconds(randomWaitTime);
+            yield return new WaitForSeconds(Random.Range(minInterval, maxInterval));
         }
     }
 
     void Shoot()
+{
+    if (!anchorPoint || !arrowPrefab) return;
+
+    Transform t = target != null ? target : (Camera.main != null ? Camera.main.transform : null);
+    if (t == null) return;
+
+    Vector3 targetPos = t.position + aimOffset;
+    Vector3 dir = (targetPos - anchorPoint.position).normalized;
+
+    // deviation (optional)
+    if (Random.value < deviationChance && maxDeviationDegrees > 0f)
     {
-        if (!anchorPoint || !target || !arrowPrefab) return;
+        float yaw = Random.Range(-maxDeviationDegrees, maxDeviationDegrees);
+        float pitch = Random.Range(-maxDeviationDegrees, maxDeviationDegrees);
 
-        Vector3 targetPos = target.position + aimOffset;
-        Vector3 dir = (targetPos - anchorPoint.position).normalized;
+        Quaternion spreadRot =
+            Quaternion.AngleAxis(yaw, transform.up) *
+            Quaternion.AngleAxis(pitch, transform.right);
 
-    // Random deviation
-        if (Random.value < deviationChance && maxDeviationDegrees > 0f)
-        {
-            // pick random yaw/pitch angles (random amount, random direction)
-            float yaw = Random.Range(-maxDeviationDegrees, maxDeviationDegrees);
-            float pitch = Random.Range(-maxDeviationDegrees, maxDeviationDegrees);
-
-            // rotate direction in world space
-            Quaternion spreadRot = Quaternion.AngleAxis(yaw, Vector3.up) * Quaternion.AngleAxis(pitch, Vector3.right);
-            dir = (spreadRot * dir).normalized;
-        }
-
-
-
-        // Rotation : le forward (+Z) de la flèche pointe vers la cible
-        Quaternion rot = Quaternion.LookRotation(dir, Vector3.up);
-
-        Instantiate(arrowPrefab, anchorPoint.position, rot);
+        dir = (spreadRot * dir).normalized;
     }
+
+    Quaternion rot = Quaternion.LookRotation(dir, Vector3.up) * Quaternion.Euler(arrowRotationOffsetEuler);
+    Instantiate(arrowPrefab, anchorPoint.position, rot);
+}
+
 }
