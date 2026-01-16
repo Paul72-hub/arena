@@ -39,21 +39,11 @@ public class DeathScreenUI : MonoBehaviour
 
     public void RestartGame()
     {
-        Time.timeScale = 1f;
-
-        if (deathScreen != null)
-            deathScreen.SetActive(false);
-
-        if (gameplayRoot != null)
-            gameplayRoot.SetActive(true);
-
-        if (uiRayToggle != null)
-        uiRayToggle.SetUIRays(false);
-        // Reset des vies / état joueur
-         PlayerEvents.OnPlayerRestart?.Invoke();
+        Time.timeScale = 1f; // Always unpause first!
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-   public void QuitGame()
+    public void QuitGame()
 {
     Time.timeScale = 1f;
 
