@@ -44,21 +44,15 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    public void Quit()
-    {
-        Time.timeScale = 1f;
+   public void Quit()
+{
+    Time.timeScale = 1f;
 
-        // Si tu as une scène Menu, mets son nom dans mainMenuSceneName
-        if (!string.IsNullOrEmpty(mainMenuSceneName))
-        {
-            SceneManager.LoadScene(mainMenuSceneName);
-            return;
-        }
+#if UNITY_EDITOR
+    UnityEditor.EditorApplication.isPlaying = false; // stop Play en editor
+#else
+    Application.Quit(); // quitte le jeu en build
+#endif
+}
 
-        // Sinon, on reload la scène actuelle (pratique en dev)
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
-        // (Ou fermer l'app en build) :
-        // Application.Quit();
-    }
 }

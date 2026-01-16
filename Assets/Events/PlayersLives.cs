@@ -19,26 +19,33 @@ public class PlayerLives : MonoBehaviour
     void OnEnable()
     {
         PlayerEvents.OnPlayerHit += LoseLife;
+        PlayerEvents.OnPlayerRestart += ResetLives; // ✅
     }
 
     void OnDisable()
     {
         PlayerEvents.OnPlayerHit -= LoseLife;
+        PlayerEvents.OnPlayerRestart -= ResetLives; // ✅
     }
 
     void LoseLife()
-{
-    if (currentLives <= 0) return;
-
-    currentLives--;
-    UpdateUI();
-
-    if (currentLives <= 0)
     {
-        PlayerEvents.OnPlayerDied?.Invoke();
-    }
-}
+        if (currentLives <= 0) return;
 
+        currentLives--;
+        UpdateUI();
+
+        if (currentLives <= 0)
+        {
+            PlayerEvents.OnPlayerDied?.Invoke();
+        }
+    }
+
+    void ResetLives() // ✅
+    {
+        currentLives = maxLives;
+        UpdateUI();
+    }
 
     void UpdateUI()
     {
