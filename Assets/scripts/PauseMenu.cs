@@ -8,6 +8,7 @@ public class PauseMenu : MonoBehaviour
 
     [Header("Quit behavior")]
     public string mainMenuSceneName = ""; // ex: "MainMenu" si tu as une scene menu
+    public UIRayToggle uiRayToggle;
 
     private bool isPaused;
 
@@ -34,6 +35,9 @@ public class PauseMenu : MonoBehaviour
     {
         isPaused = true;
         if (pausePanel != null) pausePanel.SetActive(true);
+        
+        if (uiRayToggle != null)
+        uiRayToggle.SetUIRays(true);
         Time.timeScale = 0f;
     }
 
@@ -41,6 +45,10 @@ public class PauseMenu : MonoBehaviour
     {
         isPaused = false;
         if (pausePanel != null) pausePanel.SetActive(false);
+
+        if (uiRayToggle != null)
+        uiRayToggle.SetUIRays(false);
+        
         Time.timeScale = 1f;
     }
 

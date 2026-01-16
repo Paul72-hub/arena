@@ -8,6 +8,8 @@ public class DeathScreenUI : MonoBehaviour
 
     [Header("Gameplay")]
     public GameObject gameplayRoot;   // parent des archers / spawners
+    public UIRayToggle uiRayToggle;
+
 
     void OnEnable()
     {
@@ -27,6 +29,8 @@ public class DeathScreenUI : MonoBehaviour
         if (gameplayRoot != null)
             gameplayRoot.SetActive(false);
 
+        if (uiRayToggle != null)
+        uiRayToggle.SetUIRays(true); 
 
         Time.timeScale = 0f;
     }
@@ -43,7 +47,8 @@ public class DeathScreenUI : MonoBehaviour
         if (gameplayRoot != null)
             gameplayRoot.SetActive(true);
 
-
+        if (uiRayToggle != null)
+        uiRayToggle.SetUIRays(false);
         // Reset des vies / état joueur
          PlayerEvents.OnPlayerRestart?.Invoke();
     }
